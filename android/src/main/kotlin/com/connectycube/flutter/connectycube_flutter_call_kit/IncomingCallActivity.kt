@@ -69,6 +69,9 @@ class IncomingCallActivity : Activity() {
         registerCallStateReceiver()
     }
 
+    override fun onBackPressed() {
+    }
+
     private fun initCallStateReceiver() {
         localBroadcastManager = LocalBroadcastManager.getInstance(this)
         callStateReceiver = object : BroadcastReceiver() {
