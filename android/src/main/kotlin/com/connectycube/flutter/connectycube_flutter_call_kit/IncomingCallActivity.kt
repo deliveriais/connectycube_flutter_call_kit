@@ -129,9 +129,9 @@ class IncomingCallActivity : Activity() {
 
     private fun initUi() {
         val callImage: ImageView =
-            findViewById(resources.getIdentifier("avatar_img", "id", packageName))
+            findViewById(resources.getIdentifier("user_image", "id", packageName))
         if (!userImage.equals("R.drawable.profile"))
-            callImage.setImageURI(Uri.fromFile(File(userImage)))
+            callImage.setImageURI(Uri.fromFile(File(userImage)));
         val callTitleTxt: TextView =
             findViewById(resources.getIdentifier("user_name_txt", "id", packageName))
         callTitleTxt.text = callInitiatorName
@@ -139,24 +139,7 @@ class IncomingCallActivity : Activity() {
             findViewById(resources.getIdentifier("call_type_txt", "id", packageName))
         callSubTitleTxt.text =
             String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
-        val avatarImg: ImageView =
-            findViewById(resources.getIdentifier("avatar_img", "id", packageName))
 
-        val defaultImgResId =
-            resources.getIdentifier("connectycube_place_holder", "drawable", packageName)
-        val customAvatarResName =
-            com.connectycube.flutter.connectycube_flutter_call_kit.utils.getString(this, "icon")
-        if (TextUtils.isEmpty(customAvatarResName)) {
-            avatarImg.setImageResource(defaultImgResId)
-        } else {
-            val imgResourceId =
-                resources.getIdentifier(customAvatarResName, "drawable", packageName)
-            if (imgResourceId != 0) {
-                avatarImg.setImageResource(imgResourceId)
-            } else {
-                avatarImg.setImageResource(defaultImgResId)
-            }
-        }
     }
 
     // calls from layout file
