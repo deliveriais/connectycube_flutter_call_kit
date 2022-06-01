@@ -152,7 +152,7 @@ class ConnectycubeFlutterCallKit {
 
   /// Show incoming call notification
   static Future<void> showCallNotification(CallEvent callEvent) async {
-    f (callEvent.avatarPath == null)
+    if (callEvent.avatarPath == null)
     return _methodChannel.invokeMethod("showCallNotification",
         callEvent.copyWith(avatarPath: "R.drawable.profile").toMap());
     return _methodChannel.invokeMethod(
