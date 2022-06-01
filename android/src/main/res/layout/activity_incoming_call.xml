@@ -30,7 +30,7 @@
         android:padding="8dp"
         android:textColor="@android:color/white"
         android:textSize="14sp"
-        tools:text="We call.." />
+        />
 
     <TextView
         android:id="@+id/user_name_txt"
