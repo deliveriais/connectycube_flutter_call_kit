@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.AudioAttributes
 import android.net.Uri
@@ -18,6 +19,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.connectycube.flutter.connectycube_flutter_call_kit.utils.getColorizedText
 import com.connectycube.flutter.connectycube_flutter_call_kit.utils.getString
+import java.io.File
 
 const val CALL_CHANNEL_ID = "calls_channel_id"
 const val CALL_CHANNEL_NAME = "Calls"
@@ -30,7 +32,7 @@ fun cancelCallNotification(context: Context, callId: String) {
 
 fun showCallNotification(
     context: Context, callId: String, callType: Int, callInitiatorId: Int,
-    callInitiatorName: String, callOpponents: ArrayList<Int>, userInfo: String
+    callInitiatorName: String, callOpponents: ArrayList<Int>, userInfo: String,userImage : String,
 ) {
     val notificationManager = NotificationManagerCompat.from(context)
 
@@ -44,7 +46,7 @@ fun showCallNotification(
 
     )
 
-    var ringtone: Uri
+    val ringtone: Uri
 
     val customRingtone = getString(context, "ringtone")
     Log.d("NotificationsManager", "customRingtone $customRingtone")
@@ -61,7 +63,7 @@ fun showCallNotification(
         String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
     val builder: NotificationCompat.Builder =
-        createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent, ringtone)
+        createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent, ringtone , userImage)
 
     // Add actions
     addCallRejectAction(
@@ -94,7 +96,8 @@ fun showCallNotification(
         callInitiatorId,
         callInitiatorName,
         callOpponents,
-        userInfo
+        userInfo,
+        userImage
     )
 
     // Add action when delete call notification
@@ -130,8 +133,14 @@ fun createCallNotification(
     title: String,
     text: String?,
     pendingIntent: PendingIntent,
-    ringtone: Uri
+    ringtone: Uri,
+    userImage : String,
 ): NotificationCompat.Builder {
+    val largeIcon = if (userImage == "R.drawable.profile")
+        BitmapFactory.decodeResource(context.resources, R.drawable.profile)
+    else {
+        BitmapFactory.decodeFile(File(userImage).absolutePath)
+    }
     val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
     notificationBuilder
         .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
@@ -143,6 +152,7 @@ fun createCallNotification(
         .setCategory(NotificationCompat.CATEGORY_CALL)
         .setContentIntent(pendingIntent)
         .setSound(ringtone)
+        .setLargeIcon(largeIcon)
         .setPriority(NotificationCompat.PRIORITY_MAX)
         .setTimeoutAfter(60000)
     return notificationBuilder
@@ -231,7 +241,8 @@ fun addCallFullScreenIntent(
     callInitiatorId: Int,
     callInitiatorName: String,
     callOpponents: ArrayList<Int>,
-    userInfo: String
+    userInfo: String,
+    userImage : String,
 ) {
     val callFullScreenIntent: Intent = createStartIncomingScreenIntent(
         context,
@@ -240,7 +251,8 @@ fun addCallFullScreenIntent(
         callInitiatorId,
         callInitiatorName,
         callOpponents,
-        userInfo
+        userInfo,
+        userImage
     )
     val fullScreenPendingIntent = PendingIntent.getActivity(
         context,

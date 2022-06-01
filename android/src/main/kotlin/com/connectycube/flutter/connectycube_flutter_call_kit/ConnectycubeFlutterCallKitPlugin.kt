@@ -146,6 +146,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
                         .split(',')
                         .map { it.toInt() })
                     val userInfo = arguments["user_info"] as String
+                    var userImage = arguments["avatar_path"] as String
 
                     showCallNotification(
                         applicationContext!!,
@@ -154,7 +155,8 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
                         callInitiatorId,
                         callInitiatorName,
                         callOpponents,
-                        userInfo
+                        userInfo,
+                        userImage
                     )
 
                     saveCallState(applicationContext, callId, CALL_STATE_PENDING)
