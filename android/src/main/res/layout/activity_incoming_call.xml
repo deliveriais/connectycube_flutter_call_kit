@@ -8,16 +8,23 @@
     android:orientation="vertical"
     android:scaleType="centerCrop">
 
-
-    <ImageView
-        android:id="@+id/user_image"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
+    <androidx.cardview.widget.CardView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:layout_centerHorizontal="true"
-        android:scaleType="centerCrop"
-        tools:ignore="ContentDescription" />
+        android:layout_marginTop="40dp"
+        app:cardCornerRadius="60dp">
 
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/profile"
+            tools:ignore="ContentDescription" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/call_type_txt"
@@ -30,7 +37,7 @@
         android:padding="8dp"
         android:textColor="@android:color/white"
         android:textSize="14sp"
-        />
+        tools:text="We call.." />
 
     <TextView
         android:id="@+id/user_name_txt"
