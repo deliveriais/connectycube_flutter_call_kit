@@ -1,5 +1,6 @@
 package com.connectycube.flutter.connectycube_flutter_call_kit
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,6 +18,8 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.PermissionChecker
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import com.connectycube.flutter.connectycube_flutter_call_kit.utils.getColorizedText
 import com.connectycube.flutter.connectycube_flutter_call_kit.utils.getString
 import java.io.File
@@ -32,7 +35,7 @@ fun cancelCallNotification(context: Context, callId: String) {
 
 fun showCallNotification(
     context: Context, callId: String, callType: Int, callInitiatorId: Int,
-    callInitiatorName: String, callOpponents: ArrayList<Int>, userInfo: String,userImage : String,
+    callInitiatorName: String, callOpponents: ArrayList<Int>, userInfo: String, userImage: String,
 ) {
     val notificationManager = NotificationManagerCompat.from(context)
 
@@ -63,7 +66,14 @@ fun showCallNotification(
         String.format(CALL_TYPE_PLACEHOLDER, if (callType == 1) "Video" else "Audio")
 
     val builder: NotificationCompat.Builder =
-        createCallNotification(context, callInitiatorName, callTypeTitle, pendingIntent, ringtone , userImage)
+        createCallNotification(
+            context,
+            callInitiatorName,
+            callTypeTitle,
+            pendingIntent,
+            ringtone,
+            userImage
+        )
 
     // Add actions
     addCallRejectAction(
@@ -134,7 +144,7 @@ fun createCallNotification(
     text: String?,
     pendingIntent: PendingIntent,
     ringtone: Uri,
-    userImage : String,
+    userImage: String,
 ): NotificationCompat.Builder {
     val largeIcon = if (userImage == "R.drawable.profile")
         BitmapFactory.decodeResource(context.resources, R.drawable.profile)
@@ -224,11 +234,23 @@ fun addCallAcceptAction(
             .putExtras(bundle),
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
     )
+    var color = "#4CB050"
+    if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission(
+            context,
+            Manifest.permission.SYSTEM_ALERT_WINDOW
+        )
+        != PermissionChecker.PERMISSION_GRANTED
+    ) {
+        Log.d("Permission", "Permission SYSTEM_ALERT_WINDOW not granted")
+        color = "#FF6C6969"
+    }
+
     val acceptAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
         context.resources.getIdentifier("ic_menu_call", "drawable", context.packageName),
-        getColorizedText("Accept", "#4CB050"),
+        getColorizedText("Accept", color),
         acceptPendingIntent
     )
+
         .build()
     notificationBuilder.addAction(acceptAction)
 }
@@ -242,7 +264,7 @@ fun addCallFullScreenIntent(
     callInitiatorName: String,
     callOpponents: ArrayList<Int>,
     userInfo: String,
-    userImage : String,
+    userImage: String,
 ) {
     val callFullScreenIntent: Intent = createStartIncomingScreenIntent(
         context,
