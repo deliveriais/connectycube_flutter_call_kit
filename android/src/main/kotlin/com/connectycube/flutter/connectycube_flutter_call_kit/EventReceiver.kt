@@ -108,16 +108,9 @@ class EventReceiver : BroadcastReceiver() {
                     val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
                     notificationBuilder
                         .setSmallIcon(resID)
-                        .setDefaults(NotificationCompat.DEFAULT_VIBRATE)
-                        .setContentTitle("Permission")
-                        .setContentText("hey permission not generated please open the app and accept the call or tap on notification to open the app")
-                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                        .setAutoCancel(true)
-                        .setOngoing(true)
-                        .setCategory(NotificationCompat.CATEGORY_CALL)
+                        .setContentTitle("Call Permission")
+                        .setContentText("hey permission not granted please open the app and accept the call or tap on notification to open the app")
                         .setContentIntent(pendingIntent)
-                        .setPriority(NotificationCompat.PRIORITY_MAX)
-                        .setTimeoutAfter(60000)
                     NotificationManagerCompat.from(context)
                         .notify(callId.hashCode(), notificationBuilder.build())
                 } else {
