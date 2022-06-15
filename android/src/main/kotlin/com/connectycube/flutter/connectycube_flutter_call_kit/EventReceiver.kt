@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -80,11 +81,7 @@ class EventReceiver : BroadcastReceiver() {
                 bundle.putString(EXTRA_CALL_USER_INFO, userInfo)
                 broadcastIntent.putExtras(bundle)
                 NotificationManagerCompat.from(context).cancel(callId.hashCode())
-                if (Build.VERSION.SDK_INT >= 31 && PermissionChecker.checkSelfPermission(
-                        context,
-                        Manifest.permission.SYSTEM_ALERT_WINDOW
-                    )
-                    != PermissionChecker.PERMISSION_GRANTED
+                if (Build.VERSION.SDK_INT >= 31 && !Settings.canDrawOverlays(context)
                 ) {
                     Log.d(
                         "Permission",
