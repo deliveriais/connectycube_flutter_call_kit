@@ -235,11 +235,7 @@ fun addCallAcceptAction(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
     )
     var color = "#4CB050"
-    if (Build.VERSION.SDK_INT >= 31 && checkSelfPermission(
-            context,
-            Manifest.permission.SYSTEM_ALERT_WINDOW
-        )
-        != PermissionChecker.PERMISSION_GRANTED
+    if (Build.VERSION.SDK_INT >= 31 && !Settings.canDrawOverlays(context)
     ) {
         Log.d("Permission", "Permission SYSTEM_ALERT_WINDOW not granted")
         color = "#FF6C6969"
