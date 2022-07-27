@@ -50,20 +50,22 @@ class ConnectycubeFlutterCallKit {
 
   static CallEventHandler? _onCallAccepted;
   static CallEventHandler? _onCallRejected;
+  static CallEventHandler? _onNotificationTap;
 
   /// Initialize the plugin and provided user callbacks.
   ///
   /// - This function should only be called once at the beginning of
   /// your application.
-  void init({
-    CallEventHandler? onCallAccepted,
-    CallEventHandler? onCallRejected,
-    String? ringtone,
-    String? icon,
-    String? color
-  }) {
+  void init(
+      {CallEventHandler? onCallAccepted,
+      CallEventHandler? onCallRejected,
+      CallEventHandler? onNotificationTap,
+      String? ringtone,
+      String? icon,
+      String? color}) {
     _onCallAccepted = onCallAccepted;
     _onCallRejected = onCallRejected;
+    _onNotificationTap = onNotificationTap;
 
     updateConfig(ringtone: ringtone, icon: icon, color: color);
 
@@ -255,6 +257,11 @@ class ConnectycubeFlutterCallKit {
       case 'answerCall':
         var callEvent = CallEvent.fromMap(arguments);
         _onCallAccepted?.call(callEvent);
+
+        break;
+      case 'notificationTap':
+        var callEvent = CallEvent.fromMap(arguments);
+        _onNotificationTap?.call(callEvent);
 
         break;
 
