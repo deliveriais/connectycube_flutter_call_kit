@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.Keep
 import androidx.annotation.NonNull
+import androidx.core.app.NotificationManagerCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.connectycube.flutter.connectycube_flutter_call_kit.background_isolates.ConnectycubeFlutterBgPerformingService
 import com.connectycube.flutter.connectycube_flutter_call_kit.utils.*
@@ -490,6 +491,7 @@ class CallStreamHandler(private var context: Context) : EventChannel.StreamHandl
         val intentFilter = IntentFilter()
         intentFilter.addAction(ACTION_CALL_REJECT)
         intentFilter.addAction(ACTION_CALL_ACCEPT)
+        intentFilter.addAction(ACTION_CALL_NOTIFICATION_SELECTED)
         localBroadcastManager.registerReceiver(this, intentFilter)
     }
 
@@ -511,7 +513,7 @@ class CallStreamHandler(private var context: Context) : EventChannel.StreamHandl
 
             events?.success(parameters)
             return
-        } else if (ACTION_CALL_REJECT != action && ACTION_CALL_ACCEPT != action) {
+        } else if (ACTION_CALL_REJECT != action && ACTION_CALL_ACCEPT != action && ACTION_CALL_NOTIFICATION_SELECTED != action) {
             return
         }
 
@@ -539,6 +541,22 @@ class CallStreamHandler(private var context: Context) : EventChannel.StreamHandl
                 callbackData["event"] = "endCall"
 
                 events?.success(callbackData)
+            }
+            ACTION_CALL_NOTIFICATION_SELECTED -> {
+                Log.i("intent action", intent?.action)
+                saveCallState(
+                    context?.applicationContext,
+                    callIdToProcess!!,
+                    ACTION_CALL_NOTIFICATION_SELECTED
+                )
+
+                callbackData["event"] = "notificationTap"
+
+                events?.success(callbackData)
+
+                val launchIntent = getLaunchIntent(context!!)
+                launchIntent?.action = ACTION_CALL_NOTIFICATION_SELECTED
+                context.startActivity(launchIntent)
             }
 
             ACTION_CALL_ACCEPT -> {
