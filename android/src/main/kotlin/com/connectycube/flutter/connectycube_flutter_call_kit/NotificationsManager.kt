@@ -38,13 +38,20 @@ fun showCallNotification(
     callInitiatorName: String, callOpponents: ArrayList<Int>, userInfo: String, userImage: String,
 ) {
     val notificationManager = NotificationManagerCompat.from(context)
+    val bundle = Bundle()
+    bundle.putString(EXTRA_CALL_ID, callId)
+    bundle.putInt(EXTRA_CALL_TYPE, callType)
+    bundle.putInt(EXTRA_CALL_INITIATOR_ID, callInitiatorId)
+    bundle.putString(EXTRA_CALL_INITIATOR_NAME, callInitiatorName)
+    bundle.putString(EXTRA_CALL_USER_INFO, userInfo)
+    bundle.putIntegerArrayList(EXTRA_CALL_OPPONENTS, callOpponents)
 
-    val intent = getLaunchIntent(context)
-
-    val pendingIntent = PendingIntent.getActivity(
+    val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
         context,
         callId.hashCode(),
-        intent,
+        Intent(context, EventReceiver::class.java)
+            .setAction(ACTION_CALL_NOTIFICATION_SELECTED)
+            .putExtras(bundle),
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
 
     )
