@@ -60,7 +60,78 @@ class EventReceiver : BroadcastReceiver() {
                     )
                 }
             }
+            ACTION_CALL_NOTIFICATION_SELECTED -> {
+                val extras = intent.extras
+                val callId = extras?.getString(EXTRA_CALL_ID)
+                val callType = extras?.getInt(EXTRA_CALL_TYPE)
+                val callInitiatorId = extras?.getInt(EXTRA_CALL_INITIATOR_ID)
+                val callInitiatorName = extras?.getString(EXTRA_CALL_INITIATOR_NAME)
+                val callOpponents = extras?.getIntegerArrayList(EXTRA_CALL_OPPONENTS)
+                val userInfo = extras?.getString(EXTRA_CALL_USER_INFO)
+                Log.i(TAG, "NotificationReceiver onReceive ACTION_CALL_NOTIFICATION_SELECTED, callId: $callId")
 
+                val broadcastIntent = Intent(ACTION_CALL_NOTIFICATION_SELECTED)
+                val bundle = Bundle()
+                bundle.putString(EXTRA_CALL_ID, callId)
+                bundle.putInt(EXTRA_CALL_TYPE, callType!!)
+                bundle.putInt(EXTRA_CALL_INITIATOR_ID, callInitiatorId!!)
+                bundle.putString(EXTRA_CALL_INITIATOR_NAME, callInitiatorName)
+                bundle.putIntegerArrayList(EXTRA_CALL_OPPONENTS, callOpponents)
+                bundle.putString(EXTRA_CALL_USER_INFO, userInfo)
+                broadcastIntent.putExtras(bundle)
+                NotificationManagerCompat.from(context).cancel(callId.hashCode())
+                if (Build.VERSION.SDK_INT >= 31 && !Settings.canDrawOverlays(context)
+                ) {
+                    Log.d(
+                        "Permission",
+                        "Permission SYSTEM_ALERT_WINDOW not granted new notification build"
+                    )
+                    val intent = getLaunchIntent(context)
+
+                    val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        callId.hashCode(),
+                        intent,
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+
+                    )
+                    val resID =
+                        context.resources.getIdentifier(
+                            "ic_launcher_foreground",
+                            "drawable",
+                            context.packageName
+                        )
+                    val notificationBuilder = NotificationCompat.Builder(context, CALL_CHANNEL_ID)
+                    notificationBuilder
+                        .setSmallIcon(resID)
+                        .setContentTitle("Call Permission")
+                        .setContentText("Alert window permission not granted please open the app and accept the call")
+                        .setContentIntent(pendingIntent)
+                    NotificationManagerCompat.from(context)
+                        .notify(callId.hashCode(), notificationBuilder.build())
+                } else {
+
+
+                    LocalBroadcastManager.getInstance(context.applicationContext)
+                        .sendBroadcast(broadcastIntent)
+
+
+
+                    saveCallState(context, callId!!, ACTION_CALL_NOTIFICATION_SELECTED)
+
+                    if (!isApplicationForeground(context)) {
+                        broadcastIntent.putExtra("userCallbackHandleName", ACCEPTED_IN_BACKGROUND)
+                        ConnectycubeFlutterBgPerformingService.enqueueMessageProcessing(
+                            context,
+                            broadcastIntent
+                        )
+                    }
+
+                    val launchIntent = getLaunchIntent(context)
+                    launchIntent?.action = ACTION_CALL_NOTIFICATION_SELECTED
+                    context.startActivity(launchIntent)
+                }
+            }
             ACTION_CALL_ACCEPT -> {
                 val extras = intent.extras
                 val callId = extras?.getString(EXTRA_CALL_ID)
@@ -106,7 +177,7 @@ class EventReceiver : BroadcastReceiver() {
                     notificationBuilder
                         .setSmallIcon(resID)
                         .setContentTitle("Call Permission")
-                        .setContentText("hey permission not granted please open the app and accept the call or tap on notification to open the app")
+                        .setContentText("Alert window permission not granted please open the app and accept the call")
                         .setContentIntent(pendingIntent)
                     NotificationManagerCompat.from(context)
                         .notify(callId.hashCode(), notificationBuilder.build())
