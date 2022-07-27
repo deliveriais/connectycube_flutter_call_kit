@@ -14,6 +14,7 @@ const val ACTION_CALL_REJECT = "action_call_reject"
 const val ACTION_CALL_NOTIFICATION_CANCELED = "action_call_notification_canceled"
 const val ACTION_CALL_ENDED = "action_call_ended"
 const val ACTION_TOKEN_REFRESHED = "action_token_refreshed"
+const val ACTION_CALL_NOTIFICATION_SELECTED = "action_call_notification_selected"
 
 const val REJECTED_IN_BACKGROUND = "rejected_in_background"
 const val ACCEPTED_IN_BACKGROUND = "accepted_in_background"
