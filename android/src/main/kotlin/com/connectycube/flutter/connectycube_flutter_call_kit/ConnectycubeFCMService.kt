@@ -44,9 +44,9 @@ class ConnectycubeFCMService : FirebaseMessagingService() {
         val callId = data["session_id"]
 
         if (callId == null || CALL_STATE_UNKNOWN != getCallState(
-                applicationContext,
-                callId
-            )
+                        applicationContext,
+                        callId
+                )
         ) {
             return
         }
@@ -68,14 +68,15 @@ class ConnectycubeFCMService : FirebaseMessagingService() {
         val userImage = data["avatar_path"] ?: "R.drawable.profile"
 
         showCallNotification(
-            applicationContext,
-            callId,
-            callType,
-            callInitiatorId,
-            callInitiatorName,
-            callOpponents,
-            userInfo,
-            userImage
+                applicationContext,
+                callId,
+                callType,
+                callInitiatorId,
+                callInitiatorName,
+                callOpponents,
+                userInfo,
+                userImage,
+                "Reject", "Accept"
         )
 
         saveCallState(applicationContext, callId, CALL_STATE_PENDING)
@@ -87,6 +88,6 @@ class ConnectycubeFCMService : FirebaseMessagingService() {
         super.onNewToken(token)
 
         LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(Intent(ACTION_TOKEN_REFRESHED).putExtra(EXTRA_PUSH_TOKEN, token))
+                .sendBroadcast(Intent(ACTION_TOKEN_REFRESHED).putExtra(EXTRA_PUSH_TOKEN, token))
     }
 }
