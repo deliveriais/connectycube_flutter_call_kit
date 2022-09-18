@@ -31,7 +31,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 /** ConnectycubeFlutterCallKitPlugin */
 @Keep
 class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
-    PluginRegistry.NewIntentListener, ActivityAware {
+        PluginRegistry.NewIntentListener, ActivityAware {
     private var applicationContext: Context? = null
     private var mainActivity: Activity? = null
     private lateinit var methodChannel: MethodChannel
@@ -42,17 +42,17 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
         this.applicationContext = flutterPluginBinding.applicationContext
         ContextHolder.applicationContext = this.applicationContext
         this.methodChannel =
-            MethodChannel(
-                flutterPluginBinding.binaryMessenger,
-                "connectycube_flutter_call_kit.methodChannel"
-            )
+                MethodChannel(
+                        flutterPluginBinding.binaryMessenger,
+                        "connectycube_flutter_call_kit.methodChannel"
+                )
         this.methodChannel.setMethodCallHandler(this)
 
         this.eventChannel =
-            EventChannel(
-                flutterPluginBinding.binaryMessenger,
-                "connectycube_flutter_call_kit.callEventChannel"
-            )
+                EventChannel(
+                        flutterPluginBinding.binaryMessenger,
+                        "connectycube_flutter_call_kit.callEventChannel"
+                )
         this.eventChannel.setStreamHandler(CallStreamHandler(flutterPluginBinding.applicationContext))
     }
 
@@ -70,9 +70,9 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
                 FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
                         Log.w(
-                            "ConnectycubeFlutterCallKitPlugin",
-                            "Fetching FCM registration token failed",
-                            task.exception
+                                "ConnectycubeFlutterCallKitPlugin",
+                                "Fetching FCM registration token failed",
+                                task.exception
                         )
                         result.error("error", "Fetching FCM registration token failed", null)
                     } else {
@@ -83,12 +83,12 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
 
             "startBackgroundIsolate" -> {
                 @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                    call.arguments as Map<String, Any>
+                        call.arguments as Map<String, Any>
 
                 var pluginCallbackHandle: Long = -1L
                 var userCallbackHandle: Long = -1L
                 var userCallbackHandleName: String =
-                    arguments["userCallbackHandleName"]?.toString() ?: ""
+                        arguments["userCallbackHandleName"]?.toString() ?: ""
 
 
                 val arg1 = arguments["pluginCallbackHandle"] ?: -1L
@@ -125,14 +125,14 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
                 }
 
                 ConnectycubeFlutterBgPerformingService.startBackgroundIsolate(
-                    pluginCallbackHandle, shellArgs
+                        pluginCallbackHandle, shellArgs
                 )
             }
 
             "showCallNotification" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     if (CALL_STATE_UNKNOWN != getCallState(applicationContext, callId)) {
@@ -144,20 +144,23 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
                     val callInitiatorId = arguments["caller_id"] as Int
                     val callInitiatorName = arguments["caller_name"] as String
                     val callOpponents = ArrayList((arguments["call_opponents"] as String)
-                        .split(',')
-                        .map { it.toInt() })
+                            .split(',')
+                            .map { it.toInt() })
                     val userInfo = arguments["user_info"] as String
                     var userImage = arguments["avatar_path"] as String
-
+                    var rejectActionText = arguments["reject_action_text"] as String
+                    var acceptActionText = arguments["accept_action_text"] as String
                     showCallNotification(
-                        applicationContext!!,
-                        callId,
-                        callType,
-                        callInitiatorId,
-                        callInitiatorName,
-                        callOpponents,
-                        userInfo,
-                        userImage
+                            applicationContext!!,
+                            callId,
+                            callType,
+                            callInitiatorId,
+                            callInitiatorName,
+                            callOpponents,
+                            userInfo,
+                            userImage,
+                            rejectActionText,
+                            acceptActionText
                     )
 
                     saveCallState(applicationContext, callId, CALL_STATE_PENDING)
@@ -173,7 +176,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "updateConfig" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val ringtone = arguments["ringtone"] as String?
                     val icon = arguments["icon"] as String?
                     val color = arguments["color"] as String?
@@ -191,7 +194,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "reportCallAccepted" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
                     cancelCallNotification(applicationContext!!, callId)
 
@@ -206,7 +209,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "reportCallEnded" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     processCallEnded(applicationContext, callId)
@@ -221,7 +224,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "getCallState" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     result.success(getCallState(applicationContext, callId))
@@ -233,7 +236,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "setCallState" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
                     val callState = arguments["call_state"] as String
 
@@ -248,7 +251,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "getCallData" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     result.success(getCallData(applicationContext, callId))
@@ -260,7 +263,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "setOnLockScreenVisibility" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val isVisible = arguments["is_visible"] as Boolean
 
                     setOnLockScreenVisibility(isVisible)
@@ -273,7 +276,7 @@ class ConnectycubeFlutterCallKitPlugin : FlutterPlugin, MethodCallHandler,
             "clearCallData" -> {
                 try {
                     @Suppress("UNCHECKED_CAST") val arguments: Map<String, Any> =
-                        call.arguments as Map<String, Any>
+                            call.arguments as Map<String, Any>
                     val callId = arguments["session_id"] as String
 
                     clearCallData(applicationContext, callId)
@@ -471,7 +474,7 @@ fun getLastCallId(applicationContext: Context?): String? {
 }
 
 class CallStreamHandler(private var context: Context) : EventChannel.StreamHandler,
-    BroadcastReceiver() {
+        BroadcastReceiver() {
     private lateinit var localBroadcastManager: LocalBroadcastManager
 
     private var events: EventChannel.EventSink? = null
@@ -526,7 +529,7 @@ class CallStreamHandler(private var context: Context) : EventChannel.StreamHandl
         callEventMap["caller_id"] = intent.getIntExtra(EXTRA_CALL_INITIATOR_ID, -1)
         callEventMap["caller_name"] = intent.getStringExtra(EXTRA_CALL_INITIATOR_NAME)
         callEventMap["call_opponents"] =
-            intent.getIntegerArrayListExtra(EXTRA_CALL_OPPONENTS)?.joinToString(separator = ",")
+                intent.getIntegerArrayListExtra(EXTRA_CALL_OPPONENTS)?.joinToString(separator = ",")
         callEventMap["user_info"] = intent.getStringExtra(EXTRA_CALL_USER_INFO)
 
         Log.d("ConnectycubeFlutterCallKitPlugin", "callEventMap: $callEventMap")
@@ -545,9 +548,9 @@ class CallStreamHandler(private var context: Context) : EventChannel.StreamHandl
             ACTION_CALL_NOTIFICATION_SELECTED -> {
                 Log.i("intent action", intent?.action)
                 saveCallState(
-                    context?.applicationContext,
-                    callIdToProcess!!,
-                    ACTION_CALL_NOTIFICATION_SELECTED
+                        context?.applicationContext,
+                        callIdToProcess!!,
+                        ACTION_CALL_NOTIFICATION_SELECTED
                 )
 
                 callbackData["event"] = "notificationTap"
