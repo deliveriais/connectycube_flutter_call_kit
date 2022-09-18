@@ -16,6 +16,8 @@ class CallEvent {
     required this.opponentsIds,
     this.avatarPath,
     this.userInfo,
+    this.acceptActionText = "Accept",
+    this.rejectActionText = "Reject"
   });
 
   final String sessionId;
@@ -24,6 +26,8 @@ class CallEvent {
   final String callerName;
   final Set<int> opponentsIds;
   final String? avatarPath;
+  final String? rejectActionText;
+  final String? acceptActionText;
 
   /// Used for exchanging additional data between the Call notification and your app,
   /// you will get this data in event callbacks (e.g. onCallAcceptedWhenTerminated,
@@ -38,7 +42,9 @@ class CallEvent {
     String? callerName,
     Set<int>? opponentsIds,
     Map<String, String>? userInfo,
-    String? avatarPath
+    String? avatarPath,
+    String? rejectActionText,
+    String? acceptActionText
   }) {
     return CallEvent(
         sessionId: sessionId ?? this.sessionId,
@@ -47,7 +53,9 @@ class CallEvent {
         callerName: callerName ?? this.callerName,
         opponentsIds: opponentsIds ?? this.opponentsIds,
         userInfo: userInfo ?? this.userInfo,
-        avatarPath: avatarPath ?? this.avatarPath
+        avatarPath: avatarPath ?? this.avatarPath,
+        rejectActionText: rejectActionText ?? this.rejectActionText,
+        acceptActionText: acceptActionText ?? this.acceptActionText
     );
   }
 
@@ -59,22 +67,24 @@ class CallEvent {
       'caller_name': callerName,
       'call_opponents': opponentsIds.join(','),
       'user_info': jsonEncode(userInfo ?? <String, String>{}),
-      'avatar_path': avatarPath
+      'avatar_path': avatarPath,
+      'reject_action_text': rejectActionText,
+      'accept_action_text': acceptActionText
     };
   }
 
   factory CallEvent.fromMap(Map<String, dynamic> map) {
     print('[CallEvent.fromMap] map: $map');
     return CallEvent(
-      sessionId: map['session_id'] as String,
-      callType: map['call_type'] as int,
-      callerId: map['caller_id'] as int,
-      callerName: map['caller_name'] as String,
-      opponentsIds:
-      (map['call_opponents'] as String).split(',').map(int.parse).toSet(),
-      userInfo: map['user_info'] != null
-          ? Map<String, String>.from(jsonDecode(map['user_info']))
-          : null,
+        sessionId: map['session_id'] as String,
+        callType: map['call_type'] as int,
+        callerId: map['caller_id'] as int,
+        callerName: map['caller_name'] as String,
+        opponentsIds:
+        (map['call_opponents'] as String).split(',').map(int.parse).toSet(),
+        userInfo: map['user_info'] != null
+            ? Map<String, String>.from(jsonDecode(map['user_info']))
+            : null,
         avatarPath: map['avatar_path'] as String?
     );
 
